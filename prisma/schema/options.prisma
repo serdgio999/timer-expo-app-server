@@ -1,0 +1,10 @@
+model Options {
+  id            Int      @id @default(autoincrement())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int      @unique
+  flowDuration  Int
+  breakDuration Int
+  sessionCount  Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

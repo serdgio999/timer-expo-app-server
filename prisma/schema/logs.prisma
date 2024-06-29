@@ -1,0 +1,8 @@
+model Logs {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int      @unique
+  sessionCount Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
