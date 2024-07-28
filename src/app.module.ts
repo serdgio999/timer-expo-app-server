@@ -1,11 +1,20 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
-import { AppController } from './app.controller';
 import { UserModule } from './user';
 import { OptionsModule } from './options';
+import { LogsModule } from './logs';
+import { AppController } from './app.controller';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UserModule, OptionsModule],
+  imports: [
+    ConfigModule.forRoot(),
+    UserModule,
+    OptionsModule,
+    LogsModule,
+    AuthModule
+  ],
   controllers: [AppController]
   // providers: [PrismaService]
   // controllers: [UserController, OptionsController, LogsController],

@@ -5,7 +5,7 @@ export class AppController {
   constructor() {}
 
   @Get()
-  async getUsers(): Promise<string> {
+  async get(): Promise<string> {
     return 'Hello!';
   }
 }

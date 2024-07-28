@@ -1,34 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UsePipes,
+  ValidationPipe
+} from '@nestjs/common';
+
 import { LogsService } from './logs.service';
+import { Auth } from '../auth/auth.decorator';
+import { CurrentUser } from '../user/user.decorator';
 import { CreateLogDto } from './dto/create-log.dto';
-import { UpdateLogDto } from './dto/update-log.dto';
 
 @Controller('logs')
 export class LogsController {
   constructor(private readonly logsService: LogsService) {}
 
-  @Post()
-  create(@Body() createLogDto: CreateLogDto) {
-    return this.logsService.create(createLogDto);
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Post('create') // TODO: Seems it makes sense to decompose. One endpoint for updating one for creating.
+  @Auth()
+  async createOrUpdate(
+    @CurrentUser('id') userId: number,
+    @Body() logsDto: CreateLogDto
+  ) {
+    return await this.logsService.createOrUpdate(logsDto, userId);
   }
 
-  @Get()
-  findAll() {
-    return this.logsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.logsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLogDto: UpdateLogDto) {
-    return this.logsService.update(+id, updateLogDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.logsService.remove(+id);
+  @HttpCode(200)
+  @Get('statistics')
+  @Auth()
+  async getLogsStatistics(@CurrentUser('id') userId: number) {
+    return await this.logsService.getStatistics(userId);
   }
 }

@@ -1,26 +1,50 @@
 import { Injectable } from '@nestjs/common';
+import { Options } from '@prisma/client';
+
 import { CreateOptionDto } from './dto/create-option.dto';
 import { UpdateOptionDto } from './dto/update-option.dto';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class OptionsService {
-  create(createOptionDto: CreateOptionDto) {
-    return 'This action adds a new option';
+  constructor(private prisma: PrismaService) {}
+
+  create(userId: number, createOptionDto: CreateOptionDto): Promise<Options> {
+    return this.prisma.options.create({
+      data: {
+        userId,
+        ...createOptionDto
+      }
+    });
   }
 
-  findAll() {
-    return `This action returns all options`;
+  async findOne(id: number, userId: number): Promise<Options> {
+    return this.prisma.options.findFirst({
+      where: { id, userId }
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} option`;
-  }
+  async update(
+    userId: number,
+    updateOptionDto: UpdateOptionDto
+  ): Promise<Options> {
+    const updateQuery: UpdateOptionDto = {};
 
-  update(id: number, updateOptionDto: UpdateOptionDto) {
-    return `This action updates a #${id} option`;
-  }
+    if (updateOptionDto.sessionCount) {
+      updateQuery.sessionCount = updateOptionDto.sessionCount;
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} option`;
+    if (updateOptionDto.breakDuration) {
+      updateQuery.breakDuration = updateOptionDto.breakDuration;
+    }
+
+    if (updateOptionDto.flowDuration) {
+      updateQuery.flowDuration = updateOptionDto.flowDuration;
+    }
+
+    return this.prisma.options.update({
+      where: { userId },
+      data: updateQuery
+    });
   }
 }
